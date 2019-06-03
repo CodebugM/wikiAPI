@@ -47,6 +47,31 @@ app.get("/articles", function(req,res){
   });
 });
 
+// POST request
+
+app.post("/articles", function(req, res){
+  // once the post request comes in from the client we need to tap into body to tap into
+  // some of the data that was put in
+  // the names of the variables whose data we are trying to access are called title and content
+  // console.log(req.body.title);
+  // console.log(req.body.content);
+
+  const newArticle = new Article({
+    title: req.body.title,
+    content: req.body.content
+  });
+
+  newArticle.save(function(err){
+    if(!err) {
+      res.send("Successfully added a new article.");
+    } else {
+      res.send(err);
+    }
+  });
+
+});
+
+
 app.listen(3000, function(){
   console.log("Server started on port 3000.");
 });

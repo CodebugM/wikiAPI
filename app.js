@@ -71,6 +71,24 @@ app.post("/articles", function(req, res){
 
 });
 
+// DELETE request
+
+app.delete("/articles", function(req, res){
+  // how our server will respond when the user makes the request to delete all the articles
+  //  in our collection
+  Article.deleteMany(
+    // ignore the {conditions} argument to delete everything (first argument)
+    // then check for error (second argument)
+    function(err) {
+      if (!err) {
+        res.send("Successfully deleted all articles.")
+      } else {
+        // if there was an error, send the error
+        res.send(err);
+      }
+    });
+});
+
 
 app.listen(3000, function(){
   console.log("Server started on port 3000.");

@@ -31,6 +31,8 @@ const Article = mongoose.model('Article', articleSchema);
 
 // *** app.route() *** /
 
+// Requests targeting all articles //
+
 // using the app.route() method to make our code more succinct
 // without any content our method would look like this: app.route("/articles").get().post().delete()
 // app.route is a chainable route handler
@@ -98,8 +100,86 @@ app.route("/articles")
 }); // closing parantheses for app.route()
 
 
+// ************* TARGETING A SPECIFIC ARTICLES ****************
 // using the chaining method to target a specific article
 
+app.route("/articles/:articleTitle")
+
+  .get(function(req,res){
+
+    // inside the callback function we query our database to find
+    // the document inside the articles collection the client requested
+
+    // the condition for our findOne() method is that the title of the article in our database
+    // has to match the title the user requested
+    // the code now says: We are looking through our articles collection, we are going
+    // to find one document where the title is equal to the title inside the request parameters
+    //    hence, it's foundArticle (singular)
+
+    Article.findOne({title: req.params.articleTitle}, function(err, foundArticle){
+      if (!err) {
+        res.send(foundArticle);
+      } else {
+        res.send("No articles matching that title found.");
+      }
+    });
+  })
+
+// PUT method going to the same ROUTE
+
+.put(function(req,res){
+
+  // inside the article function we need to specify three things:
+
+  Article.update(
+
+    // 1. condition
+    // the conditions upon which we want to perform the update method, i.e. what specific
+    //  article
+    // in this case the title of the article we want to update has to match the title of the article
+    //  specified in the URL put in by the user in "/articles/:articleTitle"
+    {title: req.params.articleTitle},
+
+    // 2. actual update
+    // kind of like the post request when the client submits a new article title and new content
+    // req.body.X is bodyParser parsing our request and looking for that thing that is sent over,
+    //   through an HTML form, for example
+    {title: req.body.title, content: req.body.content},
+
+    // 3. overwrite: true
+    // by default mongoose will prevent content from being overwritten, so we need to specify this
+    //   argument separately
+    {overwrite: true},
+
+    // 4. callback to check for errors
+    function(err) {
+      if(!err) {
+        res.send("Successfully updated article.");
+      }
+    })
+})
+
+// PATCH method
+
+.patch(function(req,res){
+
+  // we want to update a document but only the field that we provide new information for
+  // "update" part of CRUD
+  Article.update(
+    // 1. condition
+    {title: req.params.articleTitle},
+    // we want to make our code dynamic, so the client can choose what fields they want updated
+    {$set: req.body},
+    // callback function
+    function(err){
+      if(!err){
+        res.send("Successfully updated article.");
+      } else {
+        res.send(err);
+      }
+    })
+
+});
 
 
 

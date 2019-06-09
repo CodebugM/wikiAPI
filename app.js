@@ -178,7 +178,23 @@ app.route("/articles/:articleTitle")
         res.send(err);
       }
     })
+})
 
+// DELETE method
+
+.delete(function(req,res){
+  Article.deleteOne(
+    // argument: conditions upon which an article is to be deleted
+    {title: req.params.articleTitle},
+    // callback function
+    function(err){
+      if(!err) {
+        res.send("Successfully deleted article.");
+      } else {
+        res.send(err);
+      }
+    }
+  )
 });
 
 
